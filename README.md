@@ -3,10 +3,10 @@
 [![Windows EXE](https://img.shields.io/badge/Download-Windows_EXE-0078d7?logo=windows)](https://github.com/seeker1111/Notion-Clean-Export/releases/download/1.0/Notion.HTML.Clean.Export.exe)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 
-Fix Notion HTML exports for Windows operation.
+Fix Notion HTML exports
 
 ### Why this exists
-Notion's HTML exports generate long UUID-containing filenames that break Windows path limits, causing extraction failures and broken links. This fixes This fixes the issue..
+Notion's HTML exports generate long UUID-containing filenames that break Windows path limits, causing extraction failures and broken links. This fixes the issue.
 
 ### What it does ✨
 
