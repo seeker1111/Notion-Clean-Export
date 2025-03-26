@@ -44,7 +44,7 @@ def get_root_path_config():
 # ------------------------ HELPER FOR PROGRESS BAR ------------------------
 
 def count_items(current_dir):
-    """遞迴計算目錄下所有直接與間接的檔案和資料夾數量"""
+    """Recursively count all files and directories under current_dir."""
     count = 0
     try:
         children = os.listdir(current_dir)
@@ -57,11 +57,12 @@ def count_items(current_dir):
             count += count_items(full_path)
     return count
 
-# ------------------------ PART 1 & 2: 統一遍歷 (Rename + Mapping 生成) ------------------------
+# ------------------------ PART 1 & 2: RECURSIVE RENAME & CSV MAPPING ------------------------
 
 def clean_filename(name):
     """
-    若檔名符合 [name][separator][32位uuid][.ext] 則返回 clean 名稱與 uuid，否則返回原名與 None。
+    If the filename matches [name][separator][32-digit uuid][.ext] then return the clean name and uuid.
+    Otherwise, return the original name and None.
     """
     pattern = re.compile(
         r'^(.*?)[ _-]?'
@@ -78,11 +79,11 @@ def clean_filename(name):
 
 def unified_process_directory(current_dir, global_root, conflict_tracker=None, progress=None, task_id=None):
     """
-    遞迴遍歷 current_dir，對檔案與資料夾：
-      - 針對檔案，計算 clean 名稱（若同一目錄內有重複則加後綴），並執行 rename；
-        若檔名中含有 uuid 則記錄 mapping {uuid, file_name}。
-      - 針對資料夾，同樣處理 rename，但 mapping 僅記錄檔案。
-    回傳 mapping_entries (list of dict，僅包含 "uuid" 與 "file_name")。
+    Recursively traverse current_dir, and for each file and directory:
+      - For files: generate a clean name (adding a suffix if duplicates exist) and rename the file.
+        If the filename contains a uuid, record the mapping {uuid, file_name}.
+      - For directories: rename the directory **before** recursing into it so that the new name is used in the entire structure.
+    Returns mapping_entries (a list of dict with keys "uuid" and "file_name").
     """
     if conflict_tracker is None:
         conflict_tracker = {}
@@ -112,7 +113,7 @@ def unified_process_directory(current_dir, global_root, conflict_tracker=None, p
                 clean_name_final = base_clean
             new_full_path = os.path.join(current_dir, clean_name_final)
 
-            # If file name is taken, rename
+            # If file name is different, rename it
             if child != clean_name_final:
                 target = new_full_path
                 counter = 1
@@ -127,15 +128,11 @@ def unified_process_directory(current_dir, global_root, conflict_tracker=None, p
                     console.print(f"[red]Rename failed:[/red] {full_path} -> {target} ({e})")
                     new_full_path = full_path
 
-            # Record mapping
+            # Record mapping if uuid exists
             if uuid:
                 mapping_entries.append({'uuid': uuid, 'file_name': clean_name_final})
         elif os.path.isdir(full_path):
-
-            # Use conflict_tracker to handle directory conflicts
-            sub_conflict = {}
-            sub_mapping = unified_process_directory(full_path, global_root, sub_conflict, progress, task_id)
-            mapping_entries.extend(sub_mapping)
+            # Process directory renaming BEFORE recursing
             info = clean_filename(child)
             base_clean = info['clean']
             if base_clean in conflict_tracker:
@@ -161,14 +158,17 @@ def unified_process_directory(current_dir, global_root, conflict_tracker=None, p
                     console.print(f"[red]Rename dir failed:[/red] {full_path} -> {target} ({e})")
                     new_dir_path = full_path
 
-        # Update progress bar
+            # Now, recursively process the renamed directory.
+            # Use a new conflict tracker for subdirectories.
+            sub_mapping = unified_process_directory(new_dir_path, global_root, conflict_tracker={}, progress=progress, task_id=task_id)
+            mapping_entries.extend(sub_mapping)
+        # Update progress bar for each child processed.
         if progress and task_id is not None:
             progress.advance(task_id)
     return mapping_entries
 
 def unified_process(global_root):
     total_items = count_items(global_root)
-    mapping_entries = []
     progress_bar = Progress(
         SpinnerColumn(),
         "[progress.description]{task.description}",
@@ -286,11 +286,11 @@ def run_html_update():
     if os.path.exists(root_folder) and os.path.exists(csv_path):
         process_all_html(root_folder, csv_path)
 
-# ------------------------ Part 4 Rename Project Title ------------------------
-    
+# ------------------------ PART 4: RENAME PROJECT TITLE ------------------------
+
 def rename_workspace_folder(base_path: str):
     """
-    尋找 'index.html'，提取工作區名稱，並用當前日期重新命名資料夾。
+    Search for 'index.html', extract the workspace name, and rename the folder with the current date.
     """
     old_path = Path(base_path)
     index_path = next(old_path.rglob("index.html"), None)
@@ -317,12 +317,10 @@ def rename_workspace_folder(base_path: str):
 
     current_date = datetime.today().strftime('%Y-%m-%d')
 
-    # rename the folde
+    # Rename the folder
     new_folder_name = f"{workspace_name} {current_date}"
     new_path = old_path.parent / new_folder_name
     try:
-        new_folder_name = f"{workspace_name} {current_date}"
-        new_path = old_path.parent / new_folder_name
         old_path.rename(new_path)
         console.print(f"[green]Folder renamed successfully to:[/green] {new_path}")
     except Exception as e:
@@ -332,11 +330,10 @@ def rename_workspace_folder(base_path: str):
     # Subfolder rename
     try:
         subfolders = [f for f in new_path.iterdir() if f.is_dir()]
-        if len(subfolders) == 1 :
+        if len(subfolders) == 1:
             single_subfolder = subfolders[0]
             new_subfolder_name = f"{workspace_name} {current_date}"
             new_subfolder_path = new_path / new_subfolder_name
-
             single_subfolder.rename(new_subfolder_path)
             console.print(f"[green]Subfolder renamed successfully to:[/green] {new_subfolder_path}")
     except Exception as e:
@@ -344,7 +341,7 @@ def rename_workspace_folder(base_path: str):
 
     return True
 
-# ------------------------ UNIFIED MAIN FUNCTION ------------------------
+# ------------------------ MAIN FUNCTION ------------------------
 
 def main():
     banner = """
