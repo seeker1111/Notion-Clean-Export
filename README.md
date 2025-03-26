@@ -17,7 +17,7 @@ A tool to fix Notion's problematic HTML exports for reliable Windows operation. 
 ## Installation 📦
 
 ### For Regular Users
-1. Download the latest `.exe` from [Releases](#) (coming soon)
+1. Download the latest `.exe` from [Releases](#) 
 2. Place the executable in your preferred location
 
 ### If you want to view code
