@@ -29,7 +29,7 @@ Notion's HTML exports generate long UUID-containing filenames that break Windows
 
 ▶️ **Run the Cleaner**
 
-[![Download EXE](https://github.com/seeker1111/Notion-Clean-Export/releases/download/1.0.0/Notion.CleanExport.exe)
+[![Download EXE](https://img.shields.io/badge/Download-Windows_EXE-0078d7?style=for-the-badge&logo=windows)](https://github.com/seeker1111/Notion-Clean-Export/releases/download/1.0.0/Notion.CleanExport.exe)
 1. Click the button above to download
 2. Launch
 3. Enter the path of your Notion export  
