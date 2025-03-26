@@ -1,26 +1,35 @@
-# Notion Clean Exporter 🧹
+# Notion Clean Exporter
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Windows EXE](https://img.shields.io/badge/Download-Windows_EXE-0078d7?logo=windows)](https://github.com/seeker1111/Notion-Clean-Export/releases/download/1.0/Notion.HTML.Clean.Export.exe)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 
-A tool to fix Notion's problematic HTML exports for reliable Windows operation. Renames UUID-filled filenames, updates HTML links, and organizes exports with proper naming conventions.
+Fix Notion's problematic HTML exports for Windows operation.
 
-**Why this exists:** Notion's HTML exports generate long UUID-containing filenames that often break Windows file system limits, making exports causing unexpected problem
+### Why this exists
+Notion's HTML exports generate long UUID-containing filenames that break Windows path limits, causing extraction failures and broken links. This fixes This fixes the issue..
 
-## What does it do ✨
+### What it does ✨
 
-- Removes UUIDs from filenames while preserving extensions
-- Handles naming conflicts automatically (appends _1, _2, etc.)
-- Updates all HTML internal links to match cleaned filenames
-- Renames export folder with workspace name + date
+- Remove UUIDs from filenames
+- Resolve naming conflicts (appends _1, _2, etc.)
+- Update HTML internal links to match cleaned filenames
+- Rename export folder with workspace name + date
 
-## Installation 📦
 
-### For Regular Users
-1. Download the latest `.exe` from [Releases](#) 
-2. Place the executable in your preferred location
+## 📦Installation  (One-Click Download)
 
-### If you want to view code
-```bash
-git clone https://github.com/yourusername/notion-clean-export.git
-```
+⚙️ **From Notion**:  
+   - Go to `Settings` → `General`
+   - Choose `Export entire workspace` as HTML  
+   - Check `Include subpages`
+
+📦 **Extract Files**:  
+   - Small exports: Use built-in Windows unzip  
+   - Large exports: If Windows can't unzip, Use 7-Zip (https://www.7-zip.org/)
+
+▶️ **Run the Cleaner**
+
+[![Download EXE](https://img.shields.io/badge/Download-Windows_EXE-0078d7?style=for-the-badge&logo=windows)](https://github.com/seeker1111/Notion-Clean-Export/releases/download/1.0/Notion.HTML.Clean.Export.exe)
+1. Click the button above to download
+2. Launch
+3. Enter the path of your Notion export  
